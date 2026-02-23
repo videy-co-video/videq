@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- META VERIFIKASI -->
 <meta name="clckd" content="200980a091cea76f76c9abaed314530f" />
 
 <title>Video</title>
@@ -37,10 +36,46 @@ poster="https://cdn.aceimg.com/c0e1e2597.jpg">
 <script>
 const video = document.getElementById("videoPlayer");
 
-// iklan hanya muncul 1x saat tombol PLAY ditekan
+// key localStorage untuk tracking user
+const storageKey = "adPlayed";
+const adCooldown = 24 * 60 * 60 * 1000; // 24 jam
+
+// cek localStorage
+let adData = localStorage.getItem(storageKey);
+let adOpened = false;
+
+if (adData) {
+    // parse data timestamp
+    adData = JSON.parse(adData);
+    const now = Date.now();
+    if (now - adData.timestamp < adCooldown) {
+        adOpened = true; // belum 24 jam, jangan tampilkan iklan
+    }
+}
+
+// event play
 video.addEventListener("play", function () {
-    window.open("https://omg10.com/4/10286552", "_blank");
-}, { once: true });
+    if (adOpened) return; // sudah tampil → skip
+    adOpened = true;
+
+    // pause sebentar agar browser anggap interaksi valid
+    video.pause();
+
+    // buka iklan direct link
+    setTimeout(() => {
+        window.open("https://omg10.com/4/10286552", "_blank");
+
+        // lanjutkan video otomatis
+        setTimeout(() => {
+            video.play().catch(() => {});
+        }, 400);
+
+        // simpan timestamp di localStorage
+        localStorage.setItem(storageKey, JSON.stringify({ timestamp: Date.now() }));
+
+    }, 120);
+
+});
 </script>
 
 </body>
