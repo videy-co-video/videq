@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <meta name="clckd" content="200980a091cea76f76c9abaed314530f" />
-
 <title>Video</title>
 
 <style>
@@ -17,7 +15,6 @@ body{
     align-items:center;
     height:100vh;
 }
-
 video{
     width:100%;
     max-width:720px;
@@ -38,22 +35,20 @@ const video = document.getElementById("videoPlayer");
 
 // key localStorage untuk tracking user
 const storageKey = "adPlayed";
-const adCooldown = 24 * 60 * 60 * 1000; // 24 jam
+const adCooldown = 5 * 60 * 1000; // 5 menit
 
 // cek localStorage
-let adData = localStorage.getItem(storageKey);
 let adOpened = false;
+const stored = localStorage.getItem(storageKey);
 
-if (adData) {
-    // parse data timestamp
-    adData = JSON.parse(adData);
+if (stored) {
+    const adData = JSON.parse(stored);
     const now = Date.now();
     if (now - adData.timestamp < adCooldown) {
-        adOpened = true; // belum 24 jam, jangan tampilkan iklan
+        adOpened = true; // belum 5 menit → jangan tampilkan iklan lagi
     }
 }
 
-// event play
 video.addEventListener("play", function () {
     if (adOpened) return; // sudah tampil → skip
     adOpened = true;
@@ -61,8 +56,8 @@ video.addEventListener("play", function () {
     // pause sebentar agar browser anggap interaksi valid
     video.pause();
 
-    // buka iklan direct link
     setTimeout(() => {
+        // buka iklan direct link
         window.open("https://omg10.com/4/10286552", "_blank");
 
         // lanjutkan video otomatis
@@ -74,7 +69,6 @@ video.addEventListener("play", function () {
         localStorage.setItem(storageKey, JSON.stringify({ timestamp: Date.now() }));
 
     }, 120);
-
 });
 </script>
 
